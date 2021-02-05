@@ -1,5 +1,5 @@
 # inv-sys
-inv-sys is a simple inventory and item keeping system that allows for a type to be stored and counted on a 'per slot' -basis. Built with games in mind, but this could have more use cases. Here is a quick usage guide:
+inv-sys is a simple inventory and item keeping system that allows for a type to be stored and counted on a 'per slot' -basis. Built with games in mind, but this could have more use cases.
 
 ## Features
 - simple API
