@@ -2,9 +2,9 @@
 inv-sys is a simple inventory and item keeping system that allows for a type to be stored and counted on a 'per slot' -basis. Built with games in mind, but this could have more use cases. Here is a quick usage guide:
 
 ## Features
-- Simple API
+- simple API
 - automatic stacking functionality
-- slotamount per inventory
+- slot amount per inventory
 - max stacksize via trait
 
 ## Usage
