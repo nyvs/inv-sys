@@ -1,6 +1,6 @@
 [package]
 name = "inv-sys"
-version = "0.1.0" # remember to update html_root_url
+version = "0.1.1" # remember to update html_root_url
 authors = ["Jan Strathmann <jwstrathmann@gmail.com>"]
 edition = "2018"
 description = "A simple inventory system that allows for a type to be stored and counted on a 'per slot' -basis. Especially useful for games."
