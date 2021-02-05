@@ -1,6 +1,6 @@
 # What is inv-sys?
 inv-sys is a simple inventory and item keeping system that allows for a type to be stored and counted on a 'per slot' -basis. Built with games in mind, but this could have more use cases. Here is a quick usage guide:
-
+	```rust
 	// Implement the Stacksize Trait for your Type that will act as your Item
 	impl super::Stacksize for char {
    		fn get_max_stacksize(&self) -> usize {
@@ -8,7 +8,7 @@ inv-sys is a simple inventory and item keeping system that allows for a type to 
    		}
    	}
    	
-   	fn main() {
+	fn main() {
 		// Create the Inventory with a slotsize of 4
 		let mut inv = Inv::<char>::new(4);
 		// inv-sys works with tuples of the item and an amount.
@@ -69,6 +69,7 @@ inv-sys is a simple inventory and item keeping system that allows for a type to 
 			None
 		);
 	}
+	```
 
 ## Roadmap
  - Better way to handle item remove/decrease
