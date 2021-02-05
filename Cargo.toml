@@ -1,11 +1,12 @@
 [package]
 name = "inv-sys"
-version = "0.1.0"
+version = "0.1.0" # remember to update html_root_url
 authors = ["Jan Strathmann <jwstrathmann@gmail.com>"]
 edition = "2018"
 description = "A simple inventory system that allows for a type to be stored and counted on a 'per slot' -basis. Especially useful for games."
-#keywords = ["inventory", "inventory system", "simple", "game"]
+keywords = ["inventory", "item", "inventory system", "simple", "game"]
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/kuritohekusa/inv-sys"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

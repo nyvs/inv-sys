@@ -1,3 +1,5 @@
+#![doc(html_root_url = "https://docs.rs/inv-sys/0.1.0")]
+
 pub struct Inv<T> {
 	slots: Vec<Option<(T, usize)>>,
 	maxslots: usize,
@@ -56,15 +58,23 @@ T: Stacksize + Eq + Clone {
 		return [Some(item), None];
 	}
 
-	/// Tries to stack the item, returns true if successful
+	/// Tries to stack the item, returns remaining item.assert_eq!
+	/// If no item is found, that it can be stacked on, the place_at_first_free method is used
 	pub fn stack(&mut self, item: (T, usize)) -> Option<(T, usize)> {
 		for (i, slot) in self.slots.iter_mut().enumerate() {
 			match slot {
 				None => continue,
 				Some(slotval) => {
-					//if items are equal
-					if slotval.0 == item.0 {
-						return self.place_at(item, i);
+					//if items are equal and slot not full (allow overflow)
+					if slotval.0 == item.0 
+					&& slotval.1 < slotval.0.get_max_stacksize() {
+						let rest = self.place_at(item, i);
+						if rest != None && self.can_be_filled_with(rest.clone().unwrap()) {
+							return self.stack(rest.unwrap());
+						}
+						else {
+							return rest;
+						}
 					}
 				}
 			}
@@ -73,12 +83,32 @@ T: Stacksize + Eq + Clone {
 		self.place_at_first_free(item)
 	}
 
-	/// Try to place the item at the first free spot
+	/// If there still can be filled some slot with a minimum amount of 1, this should return true
+	pub fn can_be_filled_with(&self, item: (T, usize)) -> bool {
+		for slot in self.slots.iter() {
+			let x = match slot {
+				None => true,
+				Some(slotval) => slotval.0 == item.0 && slotval.1 < slotval.0.get_max_stacksize()
+			};
+			if x {
+				return true;
+			}
+		}
+		false
+	}
+
+	/// Try to place the item at the first free spot, returns the remaining item
 	pub fn place_at_first_free(&mut self, item: (T, usize)) -> Option<(T, usize)> {
 		for (i, slot) in self.slots.iter_mut().enumerate() {
-			return match slot {
+			match slot {
 				None => {
-					self.place_at(item, i)
+					let rest = self.place_at(item, i);
+					if rest != None && self.can_be_filled_with(rest.clone().unwrap()) {
+						return self.place_at_first_free(rest.unwrap());
+					}
+					else {
+						return rest;
+					}
 				},
 				_ => continue
 			}
@@ -86,18 +116,17 @@ T: Stacksize + Eq + Clone {
 		Some(item)
 	}
 
+	/// Get item of a specific slot position
 	pub fn get_slot(&self, slot: usize) -> Option<&(T, usize)> {
 		self.slots.get(slot).unwrap().as_ref()
 	}
 
+	/// Get item of the selected slot position
 	pub fn get_selected_slot(&self) -> Option<&(T, usize)> {
 		self.slots.get(self.selected_slot).unwrap().as_ref()
 	}
 
-	fn slot_valid(&self, slot: usize) -> bool {
-		slot < self.maxslots
-	}
-
+	/// Set the selected slot
 	pub fn set_selected_slot(&mut self, slot: usize) -> bool {
 		return if self.slot_valid(slot) {
 			self.selected_slot = slot;
@@ -106,4 +135,27 @@ T: Stacksize + Eq + Clone {
 			false
 		}
 	}
+
+	/// Decreases the amount of the item in the selected slot by 1
+	pub fn decrease_selected_slot(&mut self) -> bool {
+		let item = self.slots.get_mut(self.selected_slot).unwrap();
+		match item {
+			None => false,
+			Some(x) => {
+				x.1 -= 1;
+				if x.1 == 0 {
+					*item = None
+				}
+				true
+			} 
+		}
+	}
+
+	//checks if a slot would be valid in this inventory
+	fn slot_valid(&self, slot: usize) -> bool {
+		slot < self.maxslots
+	}
 }
+
+#[cfg(test)]
+mod test;
