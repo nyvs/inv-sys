@@ -18,7 +18,8 @@ inv-sys is a simple inventory and item keeping system that allows for a type to 
 		inv.place_at(('x', 1), 0), 
 		None
 	);
-	// It will return None, because the Item with its amount could successfully be placed in the inventory
+	// It will return None, because the Item with its amount 
+	// could successfully be placed in the inventory
 
 	// See what happens if you try to stack more items, than possible:
 	assert_eq!(
@@ -35,7 +36,8 @@ inv-sys is a simple inventory and item keeping system that allows for a type to 
 		Some(&('x', 3))
 	);
 
-	// You can also stack items quickly. Stack will look for an incomplete stack of items and fill it first.
+	// You can also stack items quickly. 
+	// Stack will look for an incomplete stack of items and fill it first.
 	// It will then try to fill the next empty slots, beginning from the start
 	assert_eq!(
 		inv.stack(('x', 3)), 
