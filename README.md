@@ -1,5 +1,5 @@
 # inv-sys
-inv-sys is a simple inventory and item keeping system that allows for a type to be stored and counted on a 'per slot' -basis. Built with games in mind, but this could have more use cases.
+A simple and effective inventory system for games.
 
 ## Features
 - simple API
@@ -80,8 +80,11 @@ fn main() {
 }
 ```
 
-## Roadmap
+## Todo
  - Better way to handle item remove/decrease
+ - Finding items
+ - Retrieving Slots
+ - Iterator
  - Trees for sorting and performance improvements
  - Simple configuration options
  - Any requests? Please just submit an issue, thanks!
