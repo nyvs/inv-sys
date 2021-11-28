@@ -1,5 +1,6 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/0.1.1")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/0.1.2")]
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Inv<T> {
 	slots: Vec<Option<(T, usize)>>,
 	maxslots: usize,

@@ -1,10 +1,10 @@
 [package]
 name = "inv-sys"
-version = "0.1.1" # remember to update html_root_url
+version = "0.1.2" # remember to update html_root_url
 authors = ["Jan Strathmann <jwstrathmann@gmail.com>"]
 edition = "2018"
-description = "A simple inventory system that allows for a type to be stored and counted on a 'per slot' -basis. Especially useful for games."
-keywords = ["inventory", "item", "inventory-system", "simple", "game"]
+description = "A simple and effective inventory system for games."
+keywords = ["inventory", "item", "inventory-system", "game"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/kuritohekusa/inv-sys"
 
