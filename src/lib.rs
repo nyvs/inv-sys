@@ -158,5 +158,14 @@ T: Stacksize + Eq + Clone {
 	}
 }
 
+impl<T> IntoIterator for Inv<T> {
+    type Item = Option<(T, usize)>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.slots.into_iter()
+    }
+}
+
 #[cfg(test)]
 mod test;

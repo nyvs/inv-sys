@@ -7,6 +7,29 @@ impl Stacksize for char {
 }
 
 #[test]
+fn iterator() {
+	let mut inv = Inv::<char>::new(2);
+	inv.place_at(('x', 1), 0);
+	inv.place_at(('y', 3), 2);
+	
+	for (num, slot) in inv.into_iter().enumerate() {
+		if slot.is_some() {
+			match num {
+				0 => {
+					assert_eq!(slot.unwrap().0, 'x')
+				},
+				2 => {
+					assert_eq!(slot.unwrap().0, 'y')
+				},
+				_ => unreachable!()
+			}
+		} else {
+			assert!(slot.is_none())
+		}
+	}
+}
+
+#[test]
 fn slotsize() {
 	let mut inv = Inv::<char>::new(2);
 	inv.place_at(('x', 1), 0);
