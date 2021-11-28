@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/0.1.2")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/0.2.2")]
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Inv<T> {
