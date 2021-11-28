@@ -10,7 +10,10 @@ A simple and effective inventory system for games.
 ## Usage
 
 ```rust
-// Implement the Stacksize Trait for your Type that will act as your Item
+/* 
+* Implement the Stacksize trait for 
+* your type that will act as your Item
+*/
 impl super::Stacksize for char {
 	fn get_max_stacksize(&self) -> usize {
 		3
@@ -30,7 +33,8 @@ fn main() {
 	// It will return None, because the Item with its amount 
 	// could successfully be placed in the inventory
 
-	// See what happens if you try to stack more items, than possible:
+	// See what happens if you try 
+	// to stack more items, than possible:
 	assert_eq!(
 		inv.place_at(('x', 3), 0), 
 		Some(('x',1))
@@ -46,8 +50,9 @@ fn main() {
 	);
 
 	// You can also stack items quickly. 
-	// Stack will look for an incomplete stack of items and fill it first.
-	// It will then try to fill the next empty slots, beginning from the start
+	// Stack will look for an incomplete stack of items
+	// and fill it first. It will then try to fill 
+	// the next empty slots, beginning from the start.
 	assert_eq!(
 		inv.stack(('x', 3)), 
 		None
@@ -55,7 +60,8 @@ fn main() {
 
 	// Fresh Start
 	inv = Inv::<char>::new(4);
-	// place_at_first_free will only look for free slots, and fill them.
+	// place_at_first_free will only look for free slots,
+	// and fill them.
 	inv.place_at(('x', 1), 0);
 	inv.place_at_first_free(('x', 2));
 	assert_eq!(
@@ -84,7 +90,6 @@ fn main() {
  - Better way to handle item remove/decrease
  - Finding items
  - Retrieving Slots
- - Iterator
  - Trees for sorting and performance improvements
  - Simple configuration options
  - Any requests? Please just submit an issue, thanks!
