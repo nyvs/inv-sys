@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/1.0.0")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.1.0")]
 
 use std::fmt::Debug;
 
@@ -219,9 +219,26 @@ where T: Stacksize + Eq + Clone {
 	pub fn stack_at(&mut self, index: usize, to_place: ItemStack<T>) -> Result<Result<(), StackErr<T>>, InvAccessErr> {
 		match self.slots.get_mut(index) {
 			Some(slot) => {
-				match slot.stack(to_place) {
-					Ok(()) => Ok(Ok(())),
-					Err(rest) => Ok(Err(rest)),
+				Ok(
+					match slot.stack(to_place) {
+						Ok(()) => Ok(()),
+						Err(rest) => Err(rest),
+					}
+				)
+			},
+			None => Err(InvAccessErr::SlotOutOfBounds)
+		}
+	}
+
+	pub fn take_stack(&mut self, index: usize) -> Result<ItemStack<T>, InvAccessErr> {
+		match self.slots.get_mut(index) {
+			Some(slot) => {
+				if let Some(filled) = &slot.inner {
+					let take = filled.clone();
+					slot.inner = None;
+					Ok(take)
+				} else {
+					Err(InvAccessErr::SlotEmpty)
 				}
 			},
 			None => Err(InvAccessErr::SlotOutOfBounds)

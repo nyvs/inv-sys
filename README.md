@@ -1,88 +1,103 @@
 # inv-sys
 A simple and effective inventory system for games.
+Completely rewritten in Dec 2021.
 
 ## Features
-- simple API
+- simple but robust API
 - automatic stacking functionality
-- slot amount per inventory
+- taking stacks
+- iterator
 - max stacksize via trait
 
 ## Usage
-
 ```rust
 /* 
 * Implement the Stacksize trait for 
 * your type that will act as your Item
 */
 impl super::Stacksize for char {
-	fn get_max_stacksize(&self) -> usize {
-		3
-	}
+  fn get_max_stacksize(&self) -> usize {
+    3
+  }
 }
 
 fn main() {
-	// Create the Inventory with a slotsize of 4
-	let mut inv = Inv::<char>::new(4);
-	// inv-sys works with tuples of the item and an amount.
-	// place_at is used to try to place an item at an exact slot
-	assert_eq!(
-		//Try to place 1 'x' in slot 0
-		inv.place_at(('x', 1), 0), 
-		None
-	);
-	// It will return None, because the Item with its amount 
-	// could successfully be placed in the inventory
+  let mut inv = Inv::<char>::new(32);
 
-	// See what happens if you try 
-	// to stack more items, than possible:
-	assert_eq!(
-		inv.place_at(('x', 3), 0), 
-		Some(('x',1))
-	);
-	// Yes, you have seen correctly! You got one Item back, 
-	// because the other ones were used to fill up the slot! 
+  // cant be placed, slot out of bounds
+  assert!(
+    inv.stack_at(
+      666, ItemStack::new('x', 1)
+    ).is_err()
+  );
 
-	// You can get an item from a slot like so:
-	// (and we can make sure there are really three Items in slot 0)
-	assert_eq!(
-		inv.get_slot(0), 
-		Some(&('x', 3))
-	);
+  // overflow, which is returned to you
+  assert_eq!(
+    inv.stack_at(
+      2, ItemStack::new('a', 4)
+    ),
+    Ok(Err(
+      StackErr::StackSizeOverflow(
+        ItemStack::new('a', 1)
+      )
+    ))
+  );
 
-	// You can also stack items quickly. 
-	// Stack will look for an incomplete stack of items
-	// and fill it first. It will then try to fill 
-	// the next empty slots, beginning from the start.
-	assert_eq!(
-		inv.stack(('x', 3)), 
-		None
-	);
+  // stack c at pos 1
+  inv.stack_at(
+    1, ItemStack::new('c', 1)
+  ).ok();
+  
+  // item cant be stacked, 
+  // item type does not match (c != y)
+  assert_eq!(
+    inv.stack_at(
+      1, ItemStack::new('y', 1)
+    ),
+    Ok(Err(
+      StackErr::ItemTypeDoesNotMatch(
+        ItemStack::new('y', 1)
+      )
+    ))
+  );
 
-	// Fresh Start
-	inv = Inv::<char>::new(4);
-	// place_at_first_free will only look for free slots,
-	// and fill them.
-	inv.place_at(('x', 1), 0);
-	inv.place_at_first_free(('x', 2));
-	assert_eq!(
-		inv.get_slot(1), 
-		Some(&('x', 2))
-	);
+  // auto stacking
+  // this first fills slot 1 to be at the max of 3
+  // since slot 1 already had 1c in it
+  // the leftover will be placed in the first available slot,
+  // which, in this case, is 0
+  assert!(
+    inv.auto_stack(
+      ItemStack::new('c', 3)
+    ).is_ok()
+  );
 
-	// You can also set a selected slot
-	inv.set_selected_slot(1);
-	// And decrease the Item Counter
-	inv.decrease_selected_slot();
-	assert_eq!(
-		inv.get_slot(1), 
-		Some(&('x', 1))
-	);
-	// The Item will then become None at amount 0
-	inv.decrease_selected_slot();
-	assert_eq!(
-		inv.get_slot(1), 
-		None
-	);
+  // 1c3c
+  assert_eq!(
+    inv.get_slot(0), 
+    Ok(&Slot::new(ItemStack::new('c', 1)))
+  );
+  assert_eq!(
+    inv.get_slot(1), 
+    Ok(&Slot::new(ItemStack::new('c', 3)))
+  );
+
+  // you can take a stack out of its slot
+  // first, we place 2t at slot 5
+  inv.stack_at(5, ItemStack::new('t', 1)).ok();
+  inv.auto_stack(ItemStack::new('t', 1)).ok();
+
+  // now we just take the stack
+  assert_eq!(
+    inv.take_stack(5), 
+    Ok(ItemStack::new('t', 2))
+  );
+
+  // slot 5 is empty now
+  assert_eq!(
+    inv.take_stack(5), 
+    Err(InvAccessErr::SlotEmpty)
+  );
 }
 ```
 
