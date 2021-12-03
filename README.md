@@ -100,11 +100,11 @@ fn main() {
   );
 }
 ```
+You can look at the unit tests for more examples.
 
 ## Todo
  - Better way to handle item remove/decrease
  - Finding items
- - Retrieving Slots
  - Trees for sorting and performance improvements
  - Simple configuration options
  - Any requests? Please just submit an issue, thanks!
