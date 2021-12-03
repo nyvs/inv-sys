@@ -1,6 +1,6 @@
 [package]
 name = "inv-sys"
-version = "0.2.2" # remember to update html_root_url
+version = "1.0.0" # remember to update html_root_url
 authors = ["Jan Strathmann <jwstrathmann@gmail.com>"]
 edition = "2018"
 description = "A simple and effective inventory system for games."

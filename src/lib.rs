@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/0.2.2")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.0.0")]
 
 use std::fmt::Debug;
 
@@ -45,8 +45,24 @@ where T: Stacksize + Eq + Clone {
 		self.inner.is_none()
 	}
 
-	fn inner_mut(&mut self) -> &mut Option<ItemStack<T>> {
-		&mut self.inner
+	pub fn stack(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
+		if let Some(inner) = &mut self.inner {
+			match inner.stack(to_place) {
+				Ok(()) => Ok(()),
+				Err(rest) => Err(rest),
+			}
+		} else {
+			match ItemStack::new_from_stack(to_place) {
+				Ok(new) => {
+					self.inner = Some(new);
+					Ok(())
+				},
+				Err((new, rest)) => {
+					self.inner = Some(new);
+					Err(rest)
+				},
+			}
+		}
 	}
 
 	pub fn get_item_type(&self) -> Result<T, InvAccessErr> {
@@ -106,14 +122,23 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
-	pub fn stacksize_split(&mut self) -> Result<(), ItemStack<T>> {
+	pub fn new_from_stack(mut new: ItemStack<T>) -> Result<Self, (Self, StackErr<T>)> {
+		match new.stacksize_split() {
+			Ok(()) => Ok(new),
+			Err(rest) => Err((new, StackErr::StackSizeOverflow(rest)))
+		}
+	}
+
+	fn stacksize_split(&mut self) -> Result<(), ItemStack<T>> {
 		let max = self.item_type.get_max_stacksize();
 		if self.amount > max {
 			let rest = self.amount - max;
 			self.amount = max;
 			Err(
-				ItemStack::<T>::new(self.item_type.clone(), rest),
-			)
+				ItemStack::<T>::new(
+				self.item_type.clone(), 
+				rest
+			))
 		} else {
 			Ok(())
 		}
@@ -150,11 +175,9 @@ where T: Stacksize + Eq + Clone {
 	fn auto_stack_inner_filled(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
 		let mut state = to_place.clone();
 		for slot in self.slots.iter_mut() {
-			if let Some(used) = slot.inner_mut() {
-				match used.stack(state) {
-					Ok(()) => {
-						return Ok(());
-					},
+			if !slot.is_empty() {
+				match slot.stack(state) {
+					Ok(()) => return Ok(()),
 					Err(rest) => {
 						state = rest.into();
 					}
@@ -170,13 +193,9 @@ where T: Stacksize + Eq + Clone {
 		let mut state = to_place.clone();
 		for slot in self.slots.iter_mut() {
 			if slot.is_empty() {
-				match state.stacksize_split() {
-					Ok(()) => {
-						*slot.inner_mut() = Some(state);
-						return Ok(());
-					},
+				match slot.stack(state) {
+					Ok(()) => return Ok(()),
 					Err(rest) => {
-						*slot.inner_mut() = Some(state);
 						state = rest.into();
 					}
 				}
@@ -193,7 +212,19 @@ where T: Stacksize + Eq + Clone {
 					Ok(()) => return Ok(()),
 					Err(rest) => Err(rest.into()),
 				}
+			}
+		}
+	}
+
+	pub fn stack_at(&mut self, index: usize, to_place: ItemStack<T>) -> Result<Result<(), StackErr<T>>, InvAccessErr> {
+		match self.slots.get_mut(index) {
+			Some(slot) => {
+				match slot.stack(to_place) {
+					Ok(()) => Ok(Ok(())),
+					Err(rest) => Ok(Err(rest)),
+				}
 			},
+			None => Err(InvAccessErr::SlotOutOfBounds)
 		}
 	}
 

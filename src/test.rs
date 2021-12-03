@@ -58,6 +58,66 @@ fn auto_stack_filled() {
 }
 
 #[test]
+fn stack_at() {
+	let mut inv = Inv::<char>::new(3);
+
+	//cant be placed, slot out of bounds
+	assert!(
+		inv.stack_at(
+			3, ItemStack::new('x', 1)
+		).is_err()
+	);
+
+	//overflow
+	assert_eq!(
+		inv.stack_at(
+			2, ItemStack::new('a', 4)
+		),
+		Ok(Err(StackErr::StackSizeOverflow(ItemStack::new('a', 1))))
+	);
+
+	assert!(
+		inv.stack_at(
+			1, ItemStack::new('b', 1)
+		).is_ok()
+	);
+
+	//item cant be stacked, item type does not match
+	assert_eq!(
+		inv.stack_at(
+			1, ItemStack::new('y', 1)
+		),
+		Ok(Err(StackErr::ItemTypeDoesNotMatch(ItemStack::new('y', 1))))
+	);
+
+	assert!(
+		inv.stack_at(
+			0, ItemStack::new('c', 1)
+		).is_ok()
+	);
+
+	assert!(
+		inv.stack_at(
+			1, ItemStack::new('b', 1)
+		).is_ok()
+	);
+
+	// 1c2b3a
+	assert_eq!(
+		*inv.get_slot(0).unwrap(), 
+		Slot::new(ItemStack::new('c', 1))
+	);
+	assert_eq!(
+		*inv.get_slot(1).unwrap(), 
+		Slot::new(ItemStack::new('b', 2))
+	);
+	assert_eq!(
+		*inv.get_slot(2).unwrap(), 
+		Slot::new(ItemStack::new('a', 3))
+	);
+}
+
+#[test]
 fn auto_stack_slotsize() {
 	let mut inv = Inv::<char>::new(1);
 	assert_eq!(
