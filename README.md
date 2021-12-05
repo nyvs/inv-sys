@@ -117,3 +117,8 @@ Feel free to open an issue/PR explaining possible improvements or changes
 
 ## Help
 Also, please do not hesitate and open an issue when needed. I am happy to help!
+
+[crates-io-badge]: https://img.shields.io/crates/v/inv-sys.svg
+[crates-io-url]: https://crates.io/crates/inv-sys
+[docs-rs-img]: https://docs.rs/inv-sys/badge.svg
+[docs-rs-url]: https://docs.rs/inv-sys
