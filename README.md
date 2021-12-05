@@ -1,13 +1,14 @@
 # inv-sys
-A simple and effective inventory system for games.
-Completely rewritten in Dec 2021.
+A robust and effective inventory system for games.
 
 ## Features
 - simple but robust API
 - automatic stacking functionality
 - taking stacks
+- finding slots
 - iterator
 - max stacksize via trait
+- and more!
 
 ## Usage
 ```rust
@@ -103,11 +104,11 @@ fn main() {
 You can look at the unit tests for more examples.
 
 ## Todo
- - Better way to handle item remove/decrease
- - Finding items
- - Trees for sorting and performance improvements
- - Simple configuration options
- - Any requests? Please just submit an issue, thanks!
+ - better way to handle item remove/decrease
+ - finding items
+ - trees for sorting and performance improvements
+ - simple configuration options
+ - any requests? please just submit an issue, thanks!
 
 ## Contributions
 Feel free to open an issue/PR explaining possible improvements or changes

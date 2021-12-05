@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/1.1.0")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.2.0")]
 
 use std::fmt::Debug;
 
@@ -29,22 +29,26 @@ pub struct Slot<T> {
 
 impl<T> Slot<T>
 where T: Stacksize + Eq + Clone {
+	/// Creates an empty slot
 	pub fn new_empty() -> Self {
 		Self {
 			inner: None
 		}
 	}
 
+	/// Creates a new Slot with a given Itemstack
 	pub fn new(items: ItemStack<T>) -> Self {
 		Self {
 			inner: Some(items)
 		}
 	}
 
+	/// Returns true if the Slot is empty
 	pub fn is_empty(&self) -> bool {
 		self.inner.is_none()
 	}
 
+	/// Tops this slot up with a given ItemStack
 	pub fn stack(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
 		if let Some(inner) = &mut self.inner {
 			match inner.stack(to_place) {
@@ -65,17 +69,54 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
-	pub fn get_item_type(&self) -> Result<T, InvAccessErr> {
+	/// Returns the item in the Slot
+	pub fn get_item(&self) -> Result<&T, InvAccessErr> {
 		if let Some(inner) = &self.inner {
-			Ok(inner.get_type())
+			Ok(inner.get_item())
 		} else {
 			Err(InvAccessErr::SlotEmpty)
 		}
 	}
 
+	/// Returns the amount of items in the Slot
 	pub fn get_amount(&self) -> Result<usize, InvAccessErr> {
 		if let Some(inner) = &self.inner {
 			Ok(inner.get_amount())
+		} else {
+			Err(InvAccessErr::SlotEmpty)
+		}
+	}
+
+	/// Decreases amount by 1
+	pub fn decrease_amount(&mut self) -> Result<(), InvAccessErr> {
+		if let Some(inner) = &mut self.inner {
+			if inner.get_amount() > 0 {
+				inner.amount -= 1;
+				if inner.amount == 0 {
+					self.inner = None;
+				}
+				Ok(())
+			} else {
+				unreachable!();
+				//Err(InvAccessErr::AmountInsufficient)
+			}
+		} else {
+			Err(InvAccessErr::SlotEmpty)
+		}
+	}
+
+	/// Decreases amount by a given arbitrary number
+	pub fn decrease_amount_by(&mut self, amount: usize) -> Result<(), InvAccessErr> {
+		if let Some(inner) = &mut self.inner {
+			if inner.get_amount() >= amount {
+				inner.amount -= amount;
+				if inner.amount == 0 {
+					self.inner = None;
+				}
+				Ok(())
+			} else {
+				Err(InvAccessErr::AmountInsufficient)
+			}
 		} else {
 			Err(InvAccessErr::SlotEmpty)
 		}
@@ -84,7 +125,7 @@ where T: Stacksize + Eq + Clone {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ItemStack<T> {
-	item_type: T,
+	item: T,
 	amount: usize
 }
 
@@ -98,7 +139,9 @@ where T: Stacksize + Eq + Clone {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum InvAccessErr {
 	SlotOutOfBounds,
-	SlotEmpty
+	SlotEmpty,
+	ItemNotFound,
+	AmountInsufficient
 }
 
 pub type InvOverflow<T> = ItemStack<T>;
@@ -115,9 +158,9 @@ where T: Stacksize + Eq + Clone {
 
 impl<T> ItemStack<T> 
 where T: Stacksize + Eq + Clone {
-	pub fn new(item_type: T, amount: usize) -> Self {
+	pub fn new(item: T, amount: usize) -> Self {
 		Self {
-			item_type,
+			item,
 			amount
 		}
 	}
@@ -130,13 +173,13 @@ where T: Stacksize + Eq + Clone {
 	}
 
 	fn stacksize_split(&mut self) -> Result<(), ItemStack<T>> {
-		let max = self.item_type.get_max_stacksize();
+		let max = self.item.get_max_stacksize();
 		if self.amount > max {
 			let rest = self.amount - max;
 			self.amount = max;
 			Err(
 				ItemStack::<T>::new(
-				self.item_type.clone(), 
+				self.item.clone(), 
 				rest
 			))
 		} else {
@@ -145,7 +188,7 @@ where T: Stacksize + Eq + Clone {
 	}
 
 	pub fn stack(&mut self, other: ItemStack<T>) -> Result<(), StackErr<T>> {
-		if other.item_type == self.item_type {
+		if other.item == self.item {
 			self.amount += other.amount;
 			self.stacksize_split().map_err(|err| StackErr::StackSizeOverflow(err))
 		} else {
@@ -153,8 +196,8 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
-	pub fn get_type(&self) -> T {
-		self.item_type.clone()
+	pub fn get_item(&self) -> &T {
+		&self.item
 	}
 
 	pub fn get_amount(&self) -> usize {
@@ -172,6 +215,7 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
+	// fill filled slots only
 	fn auto_stack_inner_filled(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
 		let mut state = to_place.clone();
 		for slot in self.slots.iter_mut() {
@@ -189,6 +233,7 @@ where T: Stacksize + Eq + Clone {
 		Err(StackErr::StackSizeOverflow(state))
 	}
 
+	// fill empty slots only
 	fn auto_stack_inner_empty(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
 		let mut state = to_place.clone();
 		for slot in self.slots.iter_mut() {
@@ -204,6 +249,8 @@ where T: Stacksize + Eq + Clone {
 		Err(StackErr::StackSizeOverflow(state))
 	}
 
+	/// Add items to the Inventory
+	/// Already used slots will be filled before empty slots will
 	pub fn auto_stack(&mut self, to_place: ItemStack<T>) -> Result<(), InvOverflow<T>> {
 		match self.auto_stack_inner_filled(to_place) {
 			Ok(()) => return Ok(()),
@@ -216,6 +263,7 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
+	/// Add items to a specific Slot
 	pub fn stack_at(&mut self, index: usize, to_place: ItemStack<T>) -> Result<Result<(), StackErr<T>>, InvAccessErr> {
 		match self.slots.get_mut(index) {
 			Some(slot) => {
@@ -230,6 +278,8 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
+	/// Take the entire ItemStack sitting in a Slot at a given position.
+	/// This means, that the ItemStack will be taken out of the slot, leaving it empty 
 	pub fn take_stack(&mut self, index: usize) -> Result<ItemStack<T>, InvAccessErr> {
 		match self.slots.get_mut(index) {
 			Some(slot) => {
@@ -245,11 +295,44 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
+	/// Return a Slot with at a given position
 	pub fn get_slot(&self, index: usize) -> Result<&Slot<T>, InvAccessErr> {
 		match self.slots.get(index) {
 			Some(slot) => Ok(slot),
 			None => Err(InvAccessErr::SlotOutOfBounds)
 		}
+	}
+
+	/// Return a Slot with at a given position mutably
+	pub fn get_slot_mut(&mut self, index: usize) -> Result<&mut Slot<T>, InvAccessErr> {
+		match self.slots.get_mut(index) {
+			Some(slot) => Ok(slot),
+			None => Err(InvAccessErr::SlotOutOfBounds)
+		}
+	}
+
+	/// Return a Slot with a given item
+	pub fn find_slot(&self, item: T) -> Result<&Slot<T>, InvAccessErr> {
+		for slot in self.slots.iter() {
+			if let Some(inner) = &slot.inner {
+				if *inner.get_item() == item {
+					return Ok(slot);
+				}
+			}
+		}
+		Err(InvAccessErr::ItemNotFound)
+	}
+
+	/// Return a Slot with a given item mutably
+	pub fn find_slot_mut(&mut self, item: T) -> Result<&mut Slot<T>, InvAccessErr> {
+		for slot in self.slots.iter_mut() {
+			if let Some(inner) = &slot.inner {
+				if *inner.get_item() == item {
+					return Ok(slot);
+				}
+			}
+		}
+		Err(InvAccessErr::ItemNotFound)
 	}
 }
 

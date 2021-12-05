@@ -1,12 +1,12 @@
 [package]
 name = "inv-sys"
-version = "1.1.0" # remember to update html_root_url
+version = "1.2.0" # remember to update html_root_url
 authors = ["Jan Strathmann <jwstrathmann@gmail.com>"]
 edition = "2018"
 description = "A simple and effective inventory system for games."
 keywords = ["inventory", "item", "inventory-system", "game"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/kuritohekusa/inv-sys"
+repository = "https://github.com/nyvs/inv-sys"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

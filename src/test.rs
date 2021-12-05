@@ -148,6 +148,28 @@ fn auto_stack_slotsize() {
 }
 
 #[test]
+fn find_slot_decrease() {
+	let mut inv = Inv::<char>::new(10);
+	inv.auto_stack(ItemStack::new('c', 3)).ok();
+	inv.auto_stack(ItemStack::new('x', 3)).ok();
+	assert!(
+		inv.find_slot_mut('x').unwrap().decrease_amount().is_ok()
+	); // -1
+	assert!(
+		inv.find_slot_mut('x').unwrap().decrease_amount_by(2).is_ok()
+	); // -2
+	assert_eq!(
+		inv.find_slot_mut('x'),
+		Err(InvAccessErr::ItemNotFound) // because its at 0 (None)
+	);
+	// decrease c by 4
+	assert_eq!(
+		inv.find_slot_mut('c').unwrap().decrease_amount_by(4),
+		Err(InvAccessErr::AmountInsufficient)
+	); // -4
+}
+
+#[test]
 fn iterator() {
 	let mut inv = Inv::<char>::new(4);
 	inv.stack_at(0,ItemStack::new('x', 1)).ok();
