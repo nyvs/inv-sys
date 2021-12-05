@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/1.2.0")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.2.1")]
 
 use std::fmt::Debug;
 
