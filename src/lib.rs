@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/1.2.2")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.3.0")]
 
 use std::fmt::Debug;
 
@@ -67,6 +67,11 @@ where T: Stacksize + Eq + Clone {
 				},
 			}
 		}
+	}
+
+	/// Returns the optional ItemStack in the Slot
+	pub fn inner(&self) -> &Option<ItemStack<T>> {
+		&self.inner
 	}
 
 	/// Returns the item in the Slot

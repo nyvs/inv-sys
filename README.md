@@ -15,11 +15,20 @@ A robust and effective inventory system for games.
 
 ## Usage
 ```rust
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Item {
+  Apple,
+  Banana,
+  Mango,
+  Peach,
+  Orange
+}
+
 /* 
 * Implement the Stacksize trait for 
 * your type that will act as your Item
 */
-impl super::Stacksize for char {
+impl super::Stacksize for Item {
   fn get_max_stacksize(&self) -> usize {
     3
   }
@@ -29,72 +38,73 @@ fn main() {
   let mut inv = Inv::<char>::new(32);
 
   // cant be placed, slot out of bounds
-  assert!(
+  assert_eq!(
     inv.stack_at(
-      666, ItemStack::new('x', 1)
-    ).is_err()
+      666, ItemStack::new(Item::Peach, 1)
+    ),
+    Err(InvAccessErr::SlotOutOfBounds)
   );
 
   // overflow, which is returned to you
   assert_eq!(
     inv.stack_at(
-      2, ItemStack::new('a', 4)
+      2, ItemStack::new(Item::Apple, 4)
     ),
     Ok(Err(
       StackErr::StackSizeOverflow(
-        ItemStack::new('a', 1)
+        ItemStack::new(Item::Apple, 1)
       )
     ))
   );
 
-  // stack c at pos 1
+  // stack Banana at pos 1
   inv.stack_at(
-    1, ItemStack::new('c', 1)
+    1, ItemStack::new(Item::Banana, 1)
   ).ok();
   
   // item cant be stacked, 
-  // item type does not match (c != y)
+  // item type does not match (Banana != Orange)
   assert_eq!(
     inv.stack_at(
-      1, ItemStack::new('y', 1)
+      1, ItemStack::new(Item::Orange, 1)
     ),
     Ok(Err(
       StackErr::ItemTypeDoesNotMatch(
-        ItemStack::new('y', 1)
+        ItemStack::new(Item::Orange, 1)
       )
     ))
   );
 
   // auto stacking
   // this first fills slot 1 to be at the max of 3
-  // since slot 1 already had 1c in it
+  // since slot 1 already had 1 Banana in it
   // the leftover will be placed in the first available slot,
   // which, in this case, is 0
   assert!(
     inv.auto_stack(
-      ItemStack::new('c', 3)
+      ItemStack::new(Item::Banana, 3)
     ).is_ok()
   );
 
-  // 1c3c
+  // 1 Banana, 3 Bananas
   assert_eq!(
     inv.get_slot(0), 
-    Ok(&Slot::new(ItemStack::new('c', 1)))
+    Ok(&Slot::new(ItemStack::new(Item::Banana, 1)))
   );
   assert_eq!(
     inv.get_slot(1), 
-    Ok(&Slot::new(ItemStack::new('c', 3)))
+    Ok(&Slot::new(ItemStack::new(Item::Banana, 3)))
   );
 
   // you can take a stack out of its slot
-  // first, we place 2t at slot 5
-  inv.stack_at(5, ItemStack::new('t', 1)).ok();
-  inv.auto_stack(ItemStack::new('t', 1)).ok();
+  // first, we place 2 Mangos at slot 5
+  inv.stack_at(5, ItemStack::new(Item::Mango, 1)).ok();
+  inv.auto_stack(ItemStack::new(Item::Mango, 1)).ok();
 
   // now we just take the stack
   assert_eq!(
     inv.take_stack(5), 
-    Ok(ItemStack::new('t', 2))
+    Ok(ItemStack::new(Item::Mango, 2))
   );
 
   // slot 5 is empty now
