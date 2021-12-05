@@ -170,6 +170,25 @@ fn find_slot_decrease() {
 }
 
 #[test]
+fn find_slot_decrease_by() {
+	let mut inv = Inv::<char>::new(10);
+	inv.auto_stack(ItemStack::new('x', 3)).ok();
+	assert!(
+		inv.find_slot_mut('x').unwrap().decrease_amount_by(2).is_ok()
+	);
+	assert!(
+		inv.find_slot_mut('x').unwrap().decrease_amount_by(2).is_err()
+	);
+	assert!(
+		inv.find_slot_mut('x').unwrap().decrease_amount_by(1).is_ok()
+	);
+	inv.auto_stack(ItemStack::new('x', 3)).ok();
+	assert!(
+		inv.find_slot_mut('x').unwrap().decrease_amount_by(3).is_ok()
+	);
+}
+
+#[test]
 fn iterator() {
 	let mut inv = Inv::<char>::new(4);
 	inv.stack_at(0,ItemStack::new('x', 1)).ok();
