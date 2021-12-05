@@ -1,12 +1,10 @@
 # inv-sys
-
 [![Latest Release][crates-io-badge]][crates-io-url]
 [![Documentation][docs-rs-img]][docs-rs-url]
 
 A robust and effective inventory system for games.
 
 ## Features
-
 - simple but robust API
 - automatic stacking functionality
 - taking stacks
@@ -16,7 +14,6 @@ A robust and effective inventory system for games.
 - and more!
 
 ## Usage
-
 ```rust
 /* 
 * Implement the Stacksize trait for 
@@ -110,7 +107,6 @@ fn main() {
 You can look at the unit tests for more examples.
 
 ## Todo
-
  - better way to handle item remove/decrease
  - finding items
  - trees for sorting and performance improvements
@@ -118,11 +114,9 @@ You can look at the unit tests for more examples.
  - any requests? please just submit an issue, thanks!
 
 ## Contributions
-
 Feel free to open an issue/PR explaining possible improvements or changes
 
 ## Help
-
 Also, please do not hesitate and open an issue when needed. I am happy to help!
 
 [crates-io-badge]: https://img.shields.io/crates/v/inv-sys.svg
