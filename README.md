@@ -117,10 +117,7 @@ fn main() {
 You can look at the unit tests for more examples.
 
 ## Todo
- - better way to handle item remove/decrease
- - finding items
- - trees for sorting and performance improvements
- - simple configuration options
+ - sorting
  - any requests? please just submit an issue, thanks!
 
 ## Contributions
