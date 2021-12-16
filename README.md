@@ -35,7 +35,7 @@ impl super::Stacksize for Item {
 }
 
 fn main() {
-  let mut inv = Inv::<char>::new(32);
+  let mut inv = Inv::<Item>::new(32);
 
   // cant be placed, slot out of bounds
   assert_eq!(
