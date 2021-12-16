@@ -204,6 +204,17 @@ fn iterator() {
 }
 
 #[test]
+fn add_nothing() {
+	let mut inv = Inv::<char>::new(1);
+	inv.auto_stack(ItemStack::new('x', 0)).ok();
+
+	assert_eq!(
+		inv.get_slot(0).unwrap().get_amount(), 
+		Err(InvAccessErr::SlotEmpty)
+	);
+}
+
+#[test]
 fn sort() {
 	let mut inv = Inv::<char>::new(4);
 	inv.auto_stack(ItemStack::new('z', 1)).ok();

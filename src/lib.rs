@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/1.3.0")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.4.0")]
 
 use std::fmt::Debug;
 
@@ -56,15 +56,20 @@ where T: Stacksize + Eq + Clone + Ord {
 				Err(rest) => Err(rest),
 			}
 		} else {
-			match ItemStack::new_from_stack(to_place) {
-				Ok(new) => {
-					self.inner = Some(new);
-					Ok(())
-				},
-				Err((new, rest)) => {
-					self.inner = Some(new);
-					Err(rest)
-				},
+			//protects from ItemStacks being amount 0
+			if to_place.get_amount() > 0 {
+				match ItemStack::new_from_stack(to_place) {
+					Ok(new) => {
+						self.inner = Some(new);
+						Ok(())
+					},
+					Err((new, rest)) => {
+						self.inner = Some(new);
+						Err(rest)
+					},
+				}
+			} else {
+				Ok(())
 			}
 		}
 	}
