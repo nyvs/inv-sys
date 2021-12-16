@@ -220,7 +220,7 @@ where T: Stacksize + Eq + Clone {
 		}
 	}
 
-	// fill filled slots only
+	// Fill filled slots only
 	fn auto_stack_inner_filled(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
 		let mut state = to_place.clone();
 		for slot in self.slots.iter_mut() {
@@ -238,7 +238,7 @@ where T: Stacksize + Eq + Clone {
 		Err(StackErr::StackSizeOverflow(state))
 	}
 
-	// fill empty slots only
+	// Fill empty slots only
 	fn auto_stack_inner_empty(&mut self, to_place: ItemStack<T>) -> Result<(), StackErr<T>> {
 		let mut state = to_place.clone();
 		for slot in self.slots.iter_mut() {
