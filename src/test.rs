@@ -191,7 +191,7 @@ fn find_slot_decrease_by() {
 #[test]
 fn iterator() {
 	let mut inv = Inv::<char>::new(4);
-	inv.stack_at(0,ItemStack::new('x', 1)).ok();
+	inv.stack_at(0, ItemStack::new('x', 1)).ok();
 	inv.stack_at(2, ItemStack::new('y', 3)).ok();
 	
 	for (num, slot) in inv.into_iter().enumerate() {
@@ -203,7 +203,23 @@ fn iterator() {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[test]
+fn sort() {
+	let mut inv = Inv::<char>::new(4);
+	inv.auto_stack(ItemStack::new('z', 1)).ok();
+	inv.auto_stack(ItemStack::new('w', 1)).ok();
+	inv.auto_stack(ItemStack::new('y', 1)).ok();
+	inv.auto_stack(ItemStack::new('x', 1)).ok();
+	
+	inv.sort();
+
+	assert_eq!(inv.get_slot(0).unwrap().get_item(), Ok(&'w'));
+	assert_eq!(inv.get_slot(1).unwrap().get_item(), Ok(&'x'));
+	assert_eq!(inv.get_slot(2).unwrap().get_item(), Ok(&'y'));
+	assert_eq!(inv.get_slot(3).unwrap().get_item(), Ok(&'z'));
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Item {
 	Apple,
 	Banana,

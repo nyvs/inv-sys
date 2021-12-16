@@ -11,6 +11,7 @@ A robust and effective inventory system for games.
 - finding slots
 - iterator
 - max stacksize via trait
+- sorting
 - and more!
 
 ## Usage

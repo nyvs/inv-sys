@@ -28,7 +28,7 @@ pub struct Slot<T> {
 }
 
 impl<T> Slot<T>
-where T: Stacksize + Eq + Clone {
+where T: Stacksize + Eq + Clone + Ord {
 	/// Creates an empty slot
 	pub fn new_empty() -> Self {
 		Self {
@@ -162,7 +162,7 @@ where T: Stacksize + Eq + Clone {
 }
 
 impl<T> ItemStack<T> 
-where T: Stacksize + Eq + Clone {
+where T: Stacksize + Eq + Clone + Ord {
 	pub fn new(item: T, amount: usize) -> Self {
 		Self {
 			item,
@@ -211,7 +211,7 @@ where T: Stacksize + Eq + Clone {
 }
 
 impl<T> Inv<T> 
-where T: Stacksize + Eq + Clone {
+where T: Stacksize + Eq + Clone + Ord {
 	pub fn new(maxslots: usize) -> Self {
 		Inv {
 			slots: vec![Slot::new_empty(); maxslots],
@@ -338,6 +338,11 @@ where T: Stacksize + Eq + Clone {
 			}
 		}
 		Err(InvAccessErr::ItemNotFound)
+	}
+
+	/// Sort the Inventory
+	pub fn sort(&mut self) {
+		self.slots.sort_unstable();
 	}
 }
 
