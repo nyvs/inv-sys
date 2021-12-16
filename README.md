@@ -16,7 +16,7 @@ A robust and effective inventory system for games.
 
 ## Usage
 ```rust
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Item {
   Apple,
   Banana,
@@ -29,7 +29,7 @@ pub enum Item {
 * Implement the Stacksize trait for 
 * your type that will act as your Item
 */
-impl super::Stacksize for Item {
+impl Stacksize for Item {
   fn get_max_stacksize(&self) -> usize {
     3
   }
