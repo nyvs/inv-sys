@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/inv-sys/1.4.0")]
+#![doc(html_root_url = "https://docs.rs/inv-sys/1.4.1")]
 
 use std::fmt::Debug;
 
@@ -8,9 +8,7 @@ pub trait Stacksize {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Inv<T> {
-	slots: Vec<Slot<T>>,
-	maxslots: usize,
-	selected_slot: usize
+	slots: Vec<Slot<T>>
 }
 
 impl<T> IntoIterator for Inv<T> {
@@ -217,11 +215,9 @@ where T: Stacksize + Eq + Clone + Ord {
 
 impl<T> Inv<T> 
 where T: Stacksize + Eq + Clone + Ord {
-	pub fn new(maxslots: usize) -> Self {
+	pub fn new(slot_amount: usize) -> Self {
 		Inv {
-			slots: vec![Slot::new_empty(); maxslots],
-			maxslots: maxslots,
-			selected_slot: 0
+			slots: vec![Slot::new_empty(); slot_amount]
 		}
 	}
 
