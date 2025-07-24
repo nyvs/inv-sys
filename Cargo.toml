@@ -2,7 +2,7 @@
 name = "inv-sys"
 version = "1.4.1" # remember to update html_root_url
 authors = ["Jan Strathmann <jwstrathmann@gmail.com>"]
-edition = "2018"
+edition = "2024"
 description = "A simple and effective inventory system for games."
 keywords = ["inventory", "item", "inventory-system", "game"]
 license = "MIT OR Apache-2.0"
@@ -11,3 +11,5 @@ repository = "https://github.com/nyvs/inv-sys"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+serde = { version = "1.0.219", features = ["derive"] }
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
