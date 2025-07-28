@@ -4,51 +4,85 @@ use std::fmt::Debug;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Slot<T> {
-    pub stack: Option<T>,
+    pub inner: Option<T>,
 }
 
 impl<T: Stackable> Slot<T> {
     pub fn is_empty(&self) -> bool {
-        self.stack.is_none()
+        self.inner.is_none()
     }
 
-    pub fn can_stack(&self, item: &T) -> bool {
-        if let Some(existing) = &self.stack {
-            existing.item() == item.item() && existing.amount() < existing.max_amount()
+    pub fn can_stack(&self, stack: &T) -> bool {
+        if let Some(existing) = &self.inner {
+            existing.item() == stack.item() && existing.amount() < existing.max_amount()
         } else {
             false
         }
     }
 
-    pub fn try_stack(&mut self, item: &mut T) -> u32 {
-        if let Some(existing) = &mut self.stack {
-            if existing.item() != item.item() {
-                return 0;
+    pub fn try_stack(&mut self, stack: &mut T) {
+        if let Some(existing) = &mut self.inner {
+            if existing.item() != stack.item() {
+                return;
             }
 
             let space = existing.max_amount() - existing.amount();
-            let to_add = item.amount().min(space);
+            let to_add = stack.amount().min(space);
+
+            if to_add <= 0 {
+                return;
+            }
 
             *existing.amount_mut() = existing.amount().saturating_add(to_add);
-            *item.amount_mut() = item.amount().saturating_sub(to_add);
+            *stack.amount_mut() = stack.amount().saturating_sub(to_add);
+        }
+    }
 
-            to_add
+    pub fn insert(&mut self, stack: T) -> Option<T> {
+        if self.is_empty() {
+            self.inner = Some(stack);
+            None
+        } else {
+            Some(stack)
+        }
+    }
+
+    pub fn take(&mut self) -> Option<T> {
+        self.inner.take()
+    }
+
+    pub fn amount(&mut self) -> u32 {
+        if let Some(existing) = &mut self.inner {
+            existing.amount()
         } else {
             0
         }
     }
 
-    pub fn insert(&mut self, item: T) -> Option<T> {
-        if self.is_empty() {
-            self.stack = Some(item);
-            None
+    pub fn decrement(&mut self) -> bool {
+        if let Some(existing) = &mut self.inner {
+            if existing.amount() > 0 {
+                *existing.amount_mut() = existing.amount().saturating_sub(1);
+                true
+            } else {
+                false
+            }
         } else {
-            Some(item)
+            false
         }
     }
 
-    pub fn take(&mut self) -> Option<T> {
-        self.stack.take()
+    pub fn decrement_by(&mut self, amount: u32) -> bool {
+        if let Some(existing) = &mut self.inner {
+            if existing.amount() >= amount {
+                *existing.amount_mut() = existing.amount().saturating_sub(amount);
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        }
     }
 }
 
