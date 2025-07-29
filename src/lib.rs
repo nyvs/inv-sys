@@ -3,5 +3,5 @@
 pub mod inv;
 pub mod slot;
 pub mod stack;
-pub mod test;
-
+#[cfg(test)]
+mod tests;

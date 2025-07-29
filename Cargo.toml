@@ -12,4 +12,6 @@ repository = "https://github.com/nyvs/inv-sys"
 
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
+
+[dev-dependencies]
 uuid = { version = "1.17.0", features = ["v4", "serde"] }
