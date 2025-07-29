@@ -118,7 +118,6 @@ fn main() {
 You can look at the unit tests for more examples.
 
 ## Todo
- - sorting
  - any requests? please just submit an issue, thanks!
 
 ## Contributions
