@@ -198,3 +198,19 @@ fn find_decrement() {
 
     assert_eq!(inv.take_from(2), None);
 }
+
+#[test]
+fn find() {
+    let mut inv = Inv::<MyStack, Uuid>::new(5000, Uuid::new_v4());
+
+    assert_eq!(inv.insert_at(4000, MyStack {
+        uuid: Uuid::nil(),
+        inventory_refer: Uuid::nil(),
+        item_refer: ItemType::Ammo,
+        amount: 15,
+    }), Ok(()));
+
+    let new_inv = inv;
+
+    assert_eq!(new_inv.find(&ItemType::Ammo).map(|slot| slot.amount()), Some(15));
+}
