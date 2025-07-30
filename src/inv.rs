@@ -86,7 +86,7 @@ where T: Stackable + Debug + Eq + Clone + Ord + Clone, M: Default {
         }
     }
 
-    pub fn find(&mut self, item: &T::Item) -> Option<&Slot<T>> {
+    pub fn find(&self, item: &T::Item) -> Option<&Slot<T>> {
         let r = self.slots.iter().find(|s| s.inner.as_ref().map(|stack| stack.item()) == Some(item));
         r
     }

@@ -4,7 +4,7 @@ use std::fmt::Debug;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Slot<T> {
-    pub inner: Option<T>,
+    pub(crate) inner: Option<T>,
 }
 
 impl<T: Stackable> Slot<T> {
@@ -47,12 +47,16 @@ impl<T: Stackable> Slot<T> {
         }
     }
 
+    pub fn inner(&self) -> &Option<T> {
+        &self.inner
+    }
+    
     pub fn take(&mut self) -> Option<T> {
         self.inner.take()
     }
 
-    pub fn amount(&mut self) -> u32 {
-        if let Some(existing) = &mut self.inner {
+    pub fn amount(&self) -> u32 {
+        if let Some(existing) = &self.inner {
             existing.amount()
         } else {
             0
