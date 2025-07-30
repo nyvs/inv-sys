@@ -104,6 +104,10 @@ where T: Stackable + Debug + Eq + Clone + Ord + Clone, M: Default {
         r
     }
 
+    pub fn swap(&mut self, a: usize, b: usize) {
+        self.slots.swap(a, b);
+    }
+
     pub fn iter(&self) -> SlotIterator<T> {
         SlotIterator {
             slots: &self.slots,
