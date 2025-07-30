@@ -50,6 +50,10 @@ impl<T: Stackable> Slot<T> {
     pub fn inner(&self) -> &Option<T> {
         &self.inner
     }
+
+    pub fn inner_mut(&mut self) -> &mut Option<T> {
+        &mut self.inner
+    }
     
     pub fn take(&mut self) -> Option<T> {
         self.inner.take()
