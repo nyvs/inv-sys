@@ -56,6 +56,14 @@ where T: Stackable + Debug + Eq + Clone + Ord + Clone, M: Default {
         self.slots.get_mut(index).and_then(|slot| slot.take())
     }
 
+    pub fn get_slot(&self, index: usize) -> Option<&Slot<T>> {
+        self.slots.get(index)
+    }
+
+    pub fn get_slot_mut(&mut self, index: usize) -> Option<&mut Slot<T>> {
+        self.slots.get_mut(index)
+    }
+
     pub fn auto_stack(&mut self, mut stack: T) -> Option<T> {
         for slot in &mut self.slots {
             if stack.amount() == 0 {
